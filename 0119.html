@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<script type="text/javascript">
+    (function strToObject()
+    {
+        var str = '{"name":"zhangsan","sex":"男","age":"24","hobby" : "girl"}';
+        var obj = eval("("+str+")");
+//        使用parse方法把字符串转换成json对象
+        var obj1 = JSON.parse(str);
+        console.log(obj);
+//        使用JSON.stringify方法把json对象转换成字符串
+        var zhifu = JSON.stringify(obj1);
+        console.log(zhifu);
+    })();
+    var name = "the window";
+    var object = {
+        name : "my object",
+        getNameFunc : function() {
+            return function() {
+                return this.name;
+            };
+        }
+    };
+    alert(object.getNameFunc()());
+</script>
+</body>
+</html>

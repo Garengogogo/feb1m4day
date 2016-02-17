@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div id="myDiv">
+1111
+</div>
+<script>
+    /*
+    * 获取属性
+    * */
+    var myDiv = document.getElementById('myDiv');
+    var getAttr = myDiv.getAttribute('id');
+    console.log(getAttr);
+    /*
+    * 设置属性
+    * */
+    var setAttr = myDiv.setAttribute('title', "这是标题");
+    /*
+    *删除属性
+    * */
+    var removeAttr = myDiv.removeAttribute('title');
+
+    /*
+    * 第十三章——事件
+    *事件流：描述的是从页面中接受事件的顺序.
+    * ie中的事件叫做事件冒泡，即事件开始时由最具体的元素（文档中嵌套层次最深的那个节点）接受。然后逐级
+    * 向上传播到较为不具体的节点
+    * 事件捕获：
+    * 事件捕获的意思——是从不太具体的节点应该更早的接受事件，而最具体的节点应该最后接受事件。
+    * IE678不支持事件捕获。
+    * 一般情况下都用事件冒泡。
+    *DOM0 级事件处理程序：优势--简单、跨浏览器优势。
+    *
+    */
+var btn = document.getElementById('myBtn');
+    btn.onclick = function() {
+        alert(this.id);    //myBtn
+    };
+    /*
+    * 删除DOM0 级方法指定的事件处理程序
+    * */
+    btn.onclick = null;  //删除事件处理程序
+/*
+* DOM2  级事件处理程序-可以添加多个事件处理程序。
+*处理事件：addEventListener()
+* 删除事件: removeEventListener()
+* 他们都接受三个参数；要处理的事件名、事件处理函数、布尔值。
+* 其中：布尔值为true时表示-在捕获阶段。false表示在冒泡阶段。
+*
+ *  */
+    var btn = document.getElementById('myBtn');
+    btn.addEventListener("click", function() {
+        alert(this.id);
+    }, false);
+    btn.addEventListener("click", function() {
+        alert("hello world！");
+    }, false);
+//移除DOM2级事件
+    var btn = document.getElementById('myBtn');
+    var handler = function () {
+        alert(this.id);
+    };
+    btn.addEventListener("click", handler, false);
+
+    //.............................
+    btn.removeEventListener("click", handler, false);  //有效删除事件。
+
+//IE事件处理程序-主要针对678
+    /*
+    * attachEvent() and detachEvent() 只存在于冒泡阶段。
+    * 在IE中事件名称需要加上on！！！！
+    * */
+    var btn = document.getElementById('myBtn');
+    btn.attachEvent("onclick", function() {
+        //DOM0级的作用域就是所属元素的作用域，DOM 2 级事件程序会在全局作用域中运行，也就是this == window。
+        alert(this == window);// true
+    });
+    btn.attachEvent("onclick", function() {
+        alert("hello me!");
+    });
+    //最后的输出结果是反序的，hello me 》 true。
+    //删除IE中的事件处理程序
+    var btn = document.getElementById('myBtn');
+    var handler = function() {
+        alert("hello me!");
+    };
+    btn.attachEvent("onclick", handler);
+    //----------------------------------------
+
+    btn.detachEvent("onclick", handler);
+
+/*
+* 跨浏览器的事件处理程序。
+* 第一个方法是创建addHandler（），这个方法属于EventUtil的对象，接受三个参数，要操作的元素、事件名称、事件处理函数。
+*利用removeHandler()移除之前添加的事件处理程序，默认是DOM 0 级。
+*
+* */
+    var EventUtil = {
+        addHandler : function(element, type, handler) {
+            if(element.addEventListener) {
+                element.addEventListener(type, handler,false);
+            } else if (element.attachEvent) {
+                element.attachEvent("on"+ type ,handler);
+            } else {
+                element["on" + type] = handler;
+            }
+        },
+        removeHandler : function(element, type, handler) {
+            if(element.removeEventListener) {
+                element.removeEventListener(type, handler, false);
+            } else if (element.detachEvent) {
+                element.detachEvent("on"+ type, handler);
+            } else {
+                element["on"+ type] = null;
+            }
+        }
+
+    };
+var btn = document.getElementById("myBtn");
+    var handler = function() {
+        alert("hello me!!");
+    };
+    EventUtil.addHandler(btn, "click", handler);
+    //这里省略了其他代码
+    EventUtil.removeHandler(btn, "click", handler);
+/*
+* 事件对象
+* DOM中的事件对象
+*
+* */
+var btn = document.getElementById("myBtn");
+    btn.onclick = function(event) {
+        alert(event.type);   //"click"
+    };
+    btn.addEventListener("click", function(event) {
+        alert(event.type);    //click
+    }, false);
+
+/*
+* 需要通过一个函数处理多个事件时，可以使用type属性。
+* */
+ var btn = document.getElementById('myBtn');
+    var handler = function(event) {
+        switch (event.type) {
+            case "click":
+                alert("hello");
+                break;
+            case  "mouserover":
+                event.target.style.backgroundColor = "red";
+                break;
+            case "mouserout";
+                event.target.style.backgroundColor = " ";
+                break;
+        }
+    };
+    btn.onclick = handler;
+    btn.onmousemove = handler;
+    btn.onmouseout = handler;
+
+/*
+* 阻止特定事件的默认行为，可以使用preventDefault()方法。
+* 只有cancelable属性值为true的事件，才能使用来取消其默认行为。
+* 另外，stopPropagation()方法用于立即停止事件在DOM层次中传播，即取消其进一步的事件捕获或冒泡。
+* */
+    var link = document.getElementById("myLink");
+    link.onclick = function(event) {
+        event.preventDefault();
+    };
+    var btn = document.getElementById('myBtn');
+    btn.onclick = function(event) {
+        alert("hello");
+        event.stopPropagation();
+    };
+    document.body.onclick = function(event) {
+        alert("body clicked");
+    };
+
+/*
+*对于这个例子而言，如果不调用stop--，就会子啊单机按钮是出现两个警示框，可是由于click事件根本不会
+ * 传播到document.body，因此就不会触发注册在这个元素上的onclick事件处理程序。
+* */
+    //////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+</script>
+</body>
+</html>

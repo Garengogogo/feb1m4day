@@ -1,0 +1,13 @@
+.whole {
+    margin: 0 auto;
+    border: 1px solid red;
+}
+.control-group {
+    margin-top: 10px;
+}
+.btn {
+    margin-top: 10px;
+}
+.ha {
+    margin-left: 25px;
+}
